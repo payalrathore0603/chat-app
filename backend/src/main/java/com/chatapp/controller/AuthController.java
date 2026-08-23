@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.chatapp.dto.LoginRequest;
+import com.chatapp.dto.LoginResponse;
 import com.chatapp.dto.RegisterRequest;
 import com.chatapp.dto.UserResponse;
 import com.chatapp.entity.User;
@@ -29,5 +31,11 @@ public class AuthController {
     public UserResponse register(@Valid @RequestBody RegisterRequest request) {
         User user = authService.register(request);
         return UserResponse.from(user);
+    }
+
+    @PostMapping("/login")
+    public LoginResponse login(
+            @Valid @RequestBody LoginRequest request) {
+        return authService.login(request);
     }
 }
