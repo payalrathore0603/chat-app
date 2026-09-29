@@ -1,7 +1,10 @@
 package com.chatapp.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
+import com.chatapp.dto.MessageResponse;
 import com.chatapp.dto.SendMessageRequest;
 import com.chatapp.entity.Conversation;
 import com.chatapp.entity.Message;
@@ -55,4 +58,28 @@ public class MessageService {
 
                 return messageRepository.save(message);
         }
+
+        public List<MessageResponse> getMessages(
+                        Long conversationId,
+                        Long currentUserID) {
+
+                // 1. Find a conversation
+                Conversation conversation = conversationRepository
+                                .findById(conversationId)
+                                .orElseThrow(() -> new RuntimeException("Conversation not found"));
+
+                // 2. Check if current user participat in that conversation
+                boolean isParticipant = conversation.getUserOne().getId().equals(currentUserID)
+                                || conversation.getUserTwo().getId().equals(currentUserID);
+                if (!isParticipant) {
+                        throw new RuntimeException("User is not part of that conversation");
+                }
+
+                // 3. get mesaages from conversation
+                List<Message> messages = messageRepository.findByConversationIdOrderByCreateAtAsc(conversationId);
+
+                // 4. converat Entity into DTO
+                return messages.stream().map(MessageResponse::from).toList();
+        }
+
 }

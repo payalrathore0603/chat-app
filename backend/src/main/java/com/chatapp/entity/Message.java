@@ -65,7 +65,7 @@ public class Message {
         this.content = content;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public LocalDateTime getCreateAt() {
         return createAt;
     }
 }

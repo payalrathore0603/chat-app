@@ -12,6 +12,6 @@ public record MessageResponse(
         LocalDateTime createdAt) {
     public static MessageResponse from(Message message) {
         return new MessageResponse(message.getId(), message.getConversation().getId(), message.getSender().getId(),
-                message.getContent(), message.getCreatedAt());
+                message.getContent(), message.getCreateAt());
     }
 }

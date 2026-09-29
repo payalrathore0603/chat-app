@@ -33,4 +33,5 @@ public class MessageController {
         Message message = messageService.sendMessage(request, senderId);
         return MessageResponse.from(message);
     }
+
 }

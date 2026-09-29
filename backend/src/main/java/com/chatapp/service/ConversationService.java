@@ -1,8 +1,13 @@
 package com.chatapp.service;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
+import com.chatapp.dto.ConversationResponse;
 import com.chatapp.dto.CreateConversationRequest;
+import com.chatapp.dto.UserResponse;
 import com.chatapp.entity.Conversation;
 import com.chatapp.entity.User;
 import com.chatapp.repository.ConversationRepository;
@@ -34,6 +39,12 @@ public class ConversationService {
                     "Cannot create conversation with yourself");
         }
 
+        Optional<Conversation> existingConversation = conversationRepository.findExistingConversation(currentUserId,
+                othUser.getId());
+
+        if (existingConversation.isPresent()) {
+            return existingConversation.get();
+        }
         Conversation conversation = new Conversation();
 
         conversation.setUserOne(currentUser);
@@ -41,4 +52,25 @@ public class ConversationService {
 
         return conversationRepository.save(conversation);
     }
+
+    public List<ConversationResponse> getMyConversation(Long currentUserId) {
+
+        List<Conversation> conversations = conversationRepository.findByUserOneIdOrUserTwoId(currentUserId,
+                currentUserId);
+
+        return conversations.stream()
+                .map(conversation -> {
+                    User otherUser;
+
+                    if (conversation.getUserOne().getId().equals(currentUserId)) {
+                        otherUser = conversation.getUserTwo();
+                    } else {
+                        otherUser = conversation.getUserOne();
+                    }
+                    return new ConversationResponse(
+                            conversation.getId(),
+                            UserResponse.from(otherUser));
+                }).toList();
+    }
+
 }
